@@ -69,6 +69,8 @@ namespace cppwinrt
 
     static void write_open_file_guard(writer& w, std::string_view const& file_name, char impl = 0)
     {
+        write_include_guard(w);
+            
         std::string mangled_name;
 
         for (auto&& c : file_name)
@@ -1304,6 +1306,18 @@ namespace cppwinrt
         {
             uint8_t* data{};
             static_cast<D const&>(*this).template as<IBufferByteAccess>()->Buffer(&data);
+            return data;
+        }
+)");
+        }
+        else if (type_name == "Windows.Foundation.IMemoryBufferReference")
+        {
+            w.write(R"(
+        auto data() const
+        {
+            uint8_t* data{};
+            uint32_t capacity{};
+            check_hresult(static_cast<D const&>(*this).template as<IMemoryBufferByteAccess>()->GetBuffer(&data, &capacity));
             return data;
         }
 )");
